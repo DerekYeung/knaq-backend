@@ -25,7 +25,7 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon --title=egg-server-knaq-backend",
+    "start": "egg-scripts start --daemon --title=egg-server-knaq-backend --no-warning",
     "stop": "egg-scripts stop --title=egg-server-knaq-backend",
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",
