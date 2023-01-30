@@ -29,7 +29,7 @@ class MailService extends Service {
     return JSON.parse(list.toString());
   }
 
-  logAndSend(email = '') {
+  async logAndSend(email = '') {
     if (!(/^[a-zA-Z0-9_-]+@([a-zA-Z0-9]+\.)+(\w+)$/.test(email))) {
       throw new Error('Invalid email');
     }
@@ -38,6 +38,7 @@ class MailService extends Service {
     const set = new Set(list);
     const waitlist = Array.from(set);
     fs.writeFileSync('./waitlist.txt', JSON.stringify(waitlist));
+    await this.sendWelcome(email);
   }
 
   sendWelcome(to = '') {
