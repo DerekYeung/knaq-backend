@@ -18,6 +18,10 @@ class MailService extends Service {
   }
 
   getList() {
+    const exists = fs.existsSync('./waitlist.txt');
+    if (!exists) {
+      return [];
+    }
     const list = fs.readFileSync('./waitlist.txt');
     if (!list) {
       return [];
@@ -25,13 +29,13 @@ class MailService extends Service {
     return JSON.parse(list.toString());
   }
 
-  logAndSend(mail = '') {
-    if (/^[a-zA-Z0-9_-]+@([a-zA-Z0-9]+\.)+(\w+)$/.test(mail)) {
+  logAndSend(email = '') {
+    if (!(/^[a-zA-Z0-9_-]+@([a-zA-Z0-9]+\.)+(\w+)$/.test(email))) {
       throw new Error('Invalid email');
     }
     const list = this.getList();
+    list.push(email);
     const set = new Set(list);
-    set.push(mail);
     const waitlist = Array.from(set);
     fs.writeFileSync('./waitlist.txt', JSON.stringify(waitlist));
   }

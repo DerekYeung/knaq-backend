@@ -25,6 +25,18 @@ module.exports = appInfo => {
   };
   userConfig.MAIL_USER = process.env.MAIL_USER || '';
   userConfig.MAIL_PASS = process.env.MAIL_PASS || '';
+  userConfig.security = {
+    csrf: {
+      enable: false,
+      ignoreJSON: true,
+    },
+    domainWhiteList: [ '*' ],
+  };
+  userConfig.cors = {
+    origin: '*',
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
+  };
+
 
   return {
     ...config,
