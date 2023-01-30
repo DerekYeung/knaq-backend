@@ -43,6 +43,7 @@ class MailService extends Service {
   sendWelcome(to = '') {
     const mailOptions = {
       from: 'developer@knaqapp.com', // sender address mailfrom must be same with the user
+      sender: 'Knaq Team',
       to, // list of receivers
       subject: 'Welcome to Knaq!', // Subject line
       text: 'Welcome to Knaq!', // plaintext body
