@@ -1,4 +1,5 @@
 const Service = require('egg').Service;
+const jwt = require('jsonwebtoken');
 const {
   google,
 } = require('googleapis');
@@ -22,7 +23,7 @@ const SCOPES = [
   'https://www.googleapis.com/auth/youtube.readonly',
   'https://www.googleapis.com/auth/youtubepartner',
 ];
-class MailService extends Service {
+class GoogleService extends Service {
   constructor(app) {
     super(app);
     this.client = {
@@ -34,6 +35,24 @@ class MailService extends Service {
     const redirectUrl = this.client.redirect_uris[0];
     const oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
     this.oauth2Client = oauth2Client;
+
+  }
+
+  async getYoutube(client) {
+    const youtube = await google.youtube({
+      version: 'v3',
+      auth: client,
+    });
+    return youtube;
+  }
+
+  getClient(credentials) {
+    const clientSecret = this.client.client_secret;
+    const clientId = this.client.client_id;
+    const redirectUrl = this.client.redirect_uris[0];
+    const oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
+    oauth2Client.credentials = credentials;
+    return oauth2Client;
   }
 
   requestAuth() {
@@ -47,11 +66,43 @@ class MailService extends Service {
 
   async connected() {
     const { code } = this.ctx.request.body || {};
-    const { tokens } = await this.oauth2Client.getToken(code);
-    console.log(tokens);
-    return tokens;
+    const response = await this.oauth2Client.getToken(code);
+    console.log(response);
+    const {
+      tokens,
+    } = response;
+    const { id_token } = tokens;
+    const identity = jwt.decode(id_token);
+    const { name, email } = identity;
+    const exists = await this.ctx.model.User.findOne({
+      where: {
+        name: identity.name,
+      },
+    });
+    let user = exists;
+    if (!user) {
+      user = await this.ctx.model.User.create({
+        name,
+        email,
+        tokens: JSON.stringify(tokens),
+      });
+    } else {
+      user.name = name;
+      user.tokens = JSON.stringify(tokens);
+      await user.save();
+    }
+    const payload = {
+      userid: user.id,
+      name,
+      email,
+    };
+    const token = await jwt.sign(payload, 'knaq-jwt-key');
+    return {
+      ...payload,
+      token,
+    };
   }
 
 }
 
-module.exports = MailService;
+module.exports = GoogleService;

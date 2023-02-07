@@ -17,7 +17,9 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1675051831786_9837';
 
   // add your middleware config here
-  config.middleware = [];
+  config.middleware = [
+    'api',
+  ];
 
   // add your user config here
   const userConfig = {
@@ -37,7 +39,19 @@ module.exports = appInfo => {
     origin: '*',
     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
   };
-
+  userConfig.sequelize = {
+    dialect: 'mysql',
+    host: process.env.DB_HOST || '43.135.87.203',
+    port: process.env.DB_PORT || 6033,
+    username: process.env.DB_USER || 'knaq',
+    password: process.env.DB_PASS,
+    database: process.env.DB_DATABASE || 'knaq',
+    define: {
+      underscored: true,
+      freezeTableName: true,
+    },
+    logging: false,
+  };
 
   return {
     ...config,
