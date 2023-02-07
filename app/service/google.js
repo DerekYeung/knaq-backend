@@ -12,7 +12,14 @@ const client = {
   redirect_uris: [ 'https://staging.knaqapp.com/connect' ],
   javascript_origins: [ 'https://staging.knaqapp.com' ],
 };
-const SCOPES = [ 'https://www.googleapis.com/auth/youtube' ];
+const SCOPES = [
+  'https://www.googleapis.com/auth/userinfo.profile',
+  'https://www.googleapis.com/auth/youtube',
+  'https://www.googleapis.com/auth/youtube.channel-memberships.creator',
+  'https://www.googleapis.com/auth/youtube.force-ssl',
+  'https://www.googleapis.com/auth/youtube.readonly',
+  'https://www.googleapis.com/auth/youtubepartner',
+];
 class MailService extends Service {
   constructor(app) {
     super(app);
@@ -34,6 +41,12 @@ class MailService extends Service {
       include_granted_scopes: true,
     });
     this.ctx.redirect(authUrl);
+  }
+
+  async connected() {
+    const { code } = this.ctx.request.body || {};
+    const { tokens } = await this.oauth2Client.getToken(code);
+    return tokens;
   }
 
 }

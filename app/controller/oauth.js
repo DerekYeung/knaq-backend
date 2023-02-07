@@ -8,6 +8,10 @@ class OauthController extends Controller {
     return this.ctx.service.google.requestAuth();
   }
 
+  async connected() {
+    return this.ctx.service.google.connected();
+  }
+
 }
 
 module.exports = OauthController;

@@ -9,4 +9,5 @@ module.exports = app => {
   router.post('/join', controller.home.join);
   router.get('/waitlist', controller.home.getWaitList);
   router.get('/oauth/connect', controller.oauth.connect);
+  router.post('/oauth/connect', controller.oauth.connected);
 };
