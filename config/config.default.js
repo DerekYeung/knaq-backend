@@ -25,6 +25,7 @@ module.exports = appInfo => {
   };
   userConfig.MAIL_USER = process.env.MAIL_USER || '';
   userConfig.MAIL_PASS = process.env.MAIL_PASS || '';
+  userConfig.GOOGLE_CLIENT_KEY = process.env.GOOGLE_CLIENT_KEY || '';
   userConfig.security = {
     csrf: {
       enable: false,

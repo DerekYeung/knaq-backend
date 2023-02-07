@@ -13,3 +13,8 @@ run/
 *.un~
 typings/
 .nyc_output/
+client_secret.json
+quickstart.js
+test.js
+mail.js
+.env
