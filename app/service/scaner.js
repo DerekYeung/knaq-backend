@@ -8,14 +8,38 @@ class ScanerService extends Service {
     console.log(users.length);
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
-      await this.scanActivity(user, videos);
+      const tokens = JSON.parse(user.tokens);
+      const client = this.ctx.service.google.getClient(tokens);
+      const youtube = await this.ctx.service.google.getYoutube(client);
+      await this.scanActivity(youtube, user, videos);
+      await this.scanSubscriptions(youtube, user);
     }
   }
 
-  async scanActivity(user, videos = []) {
-    const tokens = JSON.parse(user.tokens);
-    const client = this.ctx.service.google.getClient(tokens);
-    const youtube = await this.ctx.service.google.getYoutube(client);
+  async scanSubscriptions(youtube, user) {
+    const subscriptions = await youtube.subscriptions.list({
+      part: 'id, snippet',
+      mine: true,
+    });
+    const datas = subscriptions.data.items.map(node => {
+      return {
+        userid: user.id,
+        type: 'subscribe',
+        target: node.snippet.resourceId.channelId,
+      };
+    });
+    const model = this.ctx.model.Activity;
+    await model.bulkCreate(datas, {
+      ignoreDuplicates: true,
+      // updateOnDuplicate: [ 'userid', 'type', 'target' ],
+    });
+
+    console.log(subscriptions.data.items);
+
+    console.log('subscriptions', datas);
+  }
+
+  async scanActivity(youtube, user, videos = []) {
     for (let i = 0; i < videos.length; i++) {
       const video = videos[i];
       await this.scanRate(youtube, user, video);
@@ -36,7 +60,8 @@ class ScanerService extends Service {
         target: video.sn,
       }];
       await model.bulkCreate(datas, {
-        updateOnDuplicate: [ 'userid', 'type', 'target' ],
+        ignoreDuplicates: true,
+        // updateOnDuplicate: [ 'userid', 'type', 'target' ],
       });
     }
 

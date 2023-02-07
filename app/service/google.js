@@ -88,7 +88,9 @@ class GoogleService extends Service {
       });
     } else {
       user.name = name;
-      user.tokens = JSON.stringify(tokens);
+      if (tokens.refresh_token) {
+        user.tokens = JSON.stringify(tokens);
+      }
       await user.save();
     }
     const payload = {
