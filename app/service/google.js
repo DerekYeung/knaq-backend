@@ -13,7 +13,9 @@ const client = {
   javascript_origins: [ 'https://staging.knaqapp.com' ],
 };
 const SCOPES = [
+  'openid profile',
   'https://www.googleapis.com/auth/userinfo.profile',
+  'https://www.googleapis.com/auth/userinfo.email',
   'https://www.googleapis.com/auth/youtube',
   'https://www.googleapis.com/auth/youtube.channel-memberships.creator',
   'https://www.googleapis.com/auth/youtube.force-ssl',
@@ -46,6 +48,7 @@ class MailService extends Service {
   async connected() {
     const { code } = this.ctx.request.body || {};
     const { tokens } = await this.oauth2Client.getToken(code);
+    console.log(tokens);
     return tokens;
   }
 
