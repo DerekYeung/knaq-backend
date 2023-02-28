@@ -3,6 +3,15 @@ module.exports = () => {
   return async function error(ctx, next) {
     const isProd = ctx.app.config.env === 'prod';
     try {
+      const passport = ctx.service.passport;
+      const authentication = await passport.authentication();
+      if (!authentication) {
+        ctx.isAuthentication = false;
+        ctx.User = {};
+      } else {
+        ctx.User = authentication.user;
+      }
+
       const response = await next();
       if (ctx.pure) {
         ctx.body = ctx.body || response;

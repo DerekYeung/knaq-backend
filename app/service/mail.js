@@ -33,11 +33,16 @@ class MailService extends Service {
       throw new Error('Invalid email');
     }
     const list = this.getList();
-    list.push(email);
-    const set = new Set(list);
-    const waitlist = Array.from(set);
-    fs.writeFileSync('./waitlist.txt', JSON.stringify(waitlist));
-    await this.sendWelcome(email);
+    const exists = list.find(e => {
+      return e === email;
+    });
+    if (!exists) {
+      list.push(email);
+      const set = new Set(list);
+      const waitlist = Array.from(set);
+      fs.writeFileSync('./waitlist.txt', JSON.stringify(waitlist));
+      await this.sendWelcome(email);
+    }
   }
 
   sendWelcome(to = '') {

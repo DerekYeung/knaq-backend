@@ -26,6 +26,7 @@ class ScanerService extends Service {
         userid: user.id,
         type: 'subscribe',
         target: node.snippet.resourceId.channelId,
+        score: 100,
       };
     });
     const model = this.ctx.model.Activity;
@@ -58,6 +59,7 @@ class ScanerService extends Service {
         userid: user.id,
         type: 'like',
         target: video.sn,
+        score: 1,
       }];
       await model.bulkCreate(datas, {
         ignoreDuplicates: true,

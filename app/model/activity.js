@@ -11,6 +11,7 @@ module.exports = app => {
     userid: INTEGER(10),
     type: STRING(64),
     target: STRING(128),
+    score: INTEGER(10),
     created_at: DATE,
     updated_at: DATE,
   }, {
